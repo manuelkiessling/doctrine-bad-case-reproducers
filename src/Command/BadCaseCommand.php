@@ -2,8 +2,8 @@
 
 namespace App\Command;
 
-use App\Entity\Car;
-use App\Entity\Tire;
+use App\Entity\BadCar;
+use App\Entity\BadTire;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -11,10 +11,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name       : 'app:reproduce',
+    name       : 'app:reproduce:bad-case',
     description: 'Reproduce the issue'
 )]
-class ReproduceCommand extends Command
+class BadCaseCommand extends Command
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager
@@ -26,28 +26,27 @@ class ReproduceCommand extends Command
         InputInterface  $input,
         OutputInterface $output
     ): int {
-        ini_set('memory_limit', '2G');
-
         for ($i = 0; $i < 2; $i++) {
-            $car = new Car('Toyota');
-            $this->entityManager->persist($car);
+            $badCar = new BadCar("Toyota $i");
+            $this->entityManager->persist($badCar);
 
-            $tire = new Tire('front left', $car);
+            $badTire = new BadTire("front left $i");
+            $badTire->setBadCar($badCar);
 
-            #$car->addTire($tire);
-
-            $this->entityManager->persist($tire);
+            $this->entityManager->persist($badTire);
 
             $this->entityManager->flush();
 
-            #$this->entityManager->refresh($car);
+            $this->entityManager->refresh($badCar);
 
-            $this->entityManager->remove($car);
+            $this->entityManager->remove($badCar);
 
             $this->entityManager->flush();
 
             $output->write('.');
         }
+
+        // At this point, 'Toyota 0' is still in the database.
 
         $output->writeln('');
 
