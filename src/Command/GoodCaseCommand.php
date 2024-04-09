@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name       : 'app:reproduce:good-case',
-    description: 'Reproduce the issue'
+    description: ''
 )]
 class GoodCaseCommand extends Command
 {

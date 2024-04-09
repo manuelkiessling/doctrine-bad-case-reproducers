@@ -46,7 +46,7 @@ class BadCar
     #[ORM\OneToMany(
         targetEntity: BadTire::class,
         mappedBy    : 'badCar',
-        cascade     : ['persist']
+        cascade     : ['persist', 'remove']
     )]
     private Collection $badTires;
 
